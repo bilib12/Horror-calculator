@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grade Calculator</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+<style>
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transition: all 0.8s ease;
+}
+
+/* INTRO */
+#intro {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle, #111 0%, #000 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    color: white;
+    text-align: center;
+}
+
+.glow-text {
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-shadow: 0 0 20px red, 0 0 40px purple;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.fade-out {
+    animation: fadeOut 1s forwards;
+}
+
+@keyframes fadeOut {
+    to { opacity: 0; visibility: hidden; }
+}
+
+/* ================= HORROR MODE ================= */
+.horror-bg {
+    background: radial-gradient(circle at top, #000, #050505);
+}
+
+.horror-card {
+    background: rgba(0,0,0,0.92) !important;
+    border: 1px solid red !important;
+    box-shadow: 0 0 25px rgba(255,0,0,0.3);
+    color: #ffcccc !important;
+    animation: flicker 2s infinite;
+}
+
+@keyframes flicker {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.95; }
+}
+
+.horror-title {
+    color: red !important;
+    text-shadow: 0 0 10px red;
+}
+
+.horror-input {
+    background: #0b0b0b !important;
+    border: 1px solid red !important;
+    color: #ff4d4d !important;
+}
+
+.horror-input::placeholder {
+    color: #aa4444;
+}
+
+.slash {
+    color: red;
+}
+
+.shake {
+    animation: shake 0.25s infinite;
+}
+
+@keyframes shake {
+    0% { transform: translate(0,0); }
+    25% { transform: translate(-1px,1px); }
+    50% { transform: translate(1px,-1px); }
+    75% { transform: translate(-1px,-1px); }
+    100% { transform: translate(1px,1px); }
+}
+</style>
+</head>
+
+<body class="min-h-screen py-12 px-4">
+
+<!-- INTRO -->
+<div id="intro">
+    <div class="glow-text">ARE YOU READY TO SEE THE TERROR? 💀</div>
+    <p class="mt-4 text-gray-300">Your grades will decide your fate...</p>
+
+    <button onclick="startApp()"
+    class="mt-8 px-6 py-3 bg-red-600 hover:bg-red-700 rounded-2xl text-white font-bold shadow-lg">
+        ENTER IF YOU DARE
+    </button>
+</div>
+
+<!-- MAIN -->
+<div id="app" class="hidden max-w-6xl mx-auto">
+
+<div class="text-center mb-8">
+    <i class="fas fa-calculator text-4xl text-white"></i>
+    <h1 class="text-4xl font-bold text-white">Grade Calculator</h1>
+</div>
+
+<div class="grid md:grid-cols-2 gap-6">
+
+<!-- LEFT -->
+<div class="bg-white rounded-3xl shadow-2xl p-8 space-y-6">
+
+<div>
+<label>Exam (50%)</label>
+<div class="flex gap-2">
+<input id="examScore" class="w-full border p-3 rounded-xl text-center">
+<span class="slash">/</span>
+<input id="examMax" class="w-full border p-3 rounded-xl text-center">
+</div>
+</div>
+
+<div>
+<label>Performance Task (20%)</label>
+<div class="flex gap-2">
+<input id="ptScore" class="w-full border p-3 rounded-xl text-center">
+<span class="slash">/</span>
+<input id="ptMax" class="w-full border p-3 rounded-xl text-center">
+</div>
+</div>
+
+<div>
+<label>Quiz (15%)</label>
+<div id="quizBox" class="space-y-2"></div>
+</div>
+
+<div>
+<label>Activity (15%)</label>
+<div id="actBox" class="space-y-2"></div>
+</div>
+
+<button onclick="calculateGrade()" class="w-full bg-indigo-600 text-white p-4 rounded-2xl">
+Calculate Grade
+</button>
+
+<div id="result" class="hidden text-center mt-4">
+<p id="final" class="text-4xl font-extrabold text-indigo-700"></p>
+</div>
+
+</div>
+
+<!-- RIGHT -->
+<div class="bg-white rounded-3xl shadow-2xl p-8 space-y-6">
+
+<h2 class="text-2xl font-bold text-purple-700">🏫 Semester System</h2>
+
+<input id="prelim" class="w-full border p-3 rounded-xl text-center" placeholder="Prelim (20%)">
+<input id="midterm" class="w-full border p-3 rounded-xl text-center" placeholder="Midterm (20%)">
+<input id="prefi" class="w-full border p-3 rounded-xl text-center" placeholder="Pre-Final (20%)">
+<input id="finals" class="w-full border p-3 rounded-xl text-center" placeholder="Finals (40%)">
+
+<button onclick="calculateSemester()" class="w-full bg-purple-600 text-white p-4 rounded-2xl">
+Calculate Semester
+</button>
+
+<div id="semResult" class="text-center font-bold text-xl text-purple-700"></div>
+
+</div>
+
+</div>
+</div>
+
+<script>
+
+// INTRO + HORROR MODE
+function startApp(){
+    document.getElementById("intro").classList.add("fade-out");
+
+    setTimeout(()=>{
+
+        document.getElementById("intro").style.display="none";
+        document.getElementById("app").classList.remove("hidden");
+
+        // HORROR MODE ON
+        document.body.classList.add("horror-bg");
+
+        document.querySelectorAll(".bg-white").forEach(el=>{
+            el.classList.add("horror-card","shake");
+        });
+
+        document.querySelectorAll("h1,h2,label").forEach(el=>{
+            el.classList.add("horror-title");
+        });
+
+        document.querySelectorAll("input").forEach(el=>{
+            el.classList.add("horror-input");
+        });
+
+    },1000);
+}
+
+// CREATE INPUTS
+function create(prefix, container){
+    for(let i=0;i<5;i++){
+        document.getElementById(container).innerHTML += `
+        <div class="flex gap-2">
+            <input id="${prefix}s${i}" placeholder="Score" class="w-1/2 border p-2 rounded">
+            <input id="${prefix}m${i}" placeholder="Max" class="w-1/2 border p-2 rounded">
+        </div>`;
+    }
+}
+create("q","quizBox");
+create("a","actBox");
+
+// AVG
+function avg(prefix){
+    let arr=[];
+    for(let i=0;i<5;i++){
+        let s=parseFloat(document.getElementById(prefix+"s"+i).value);
+        let m=parseFloat(document.getElementById(prefix+"m"+i).value);
+
+        if(!isNaN(s)&&!isNaN(m)&&m>0){
+            arr.push((s/m)*100);
+        }
+    }
+    return arr.length?arr.reduce((a,b)=>a+b)/arr.length:0;
+}
+
+// CLASS GRADE
+function calculateGrade(){
+
+let exam = (parseFloat(examScore.value)/parseFloat(examMax.value))*100 || 0;
+let pt = (parseFloat(ptScore.value)/parseFloat(ptMax.value))*100 || 0;
+
+let quiz = avg("q");
+let act = avg("a");
+
+let final =
+exam*0.50 +
+pt*0.20 +
+quiz*0.15 +
+act*0.15;
+
+document.getElementById("result").classList.remove("hidden");
+document.getElementById("final").innerText = final.toFixed(2) + "%";
+}
+
+// SEMESTER
+function calculateSemester(){
+
+let p = parseFloat(prelim.value)||0;
+let m = parseFloat(midterm.value)||0;
+let pf = parseFloat(prefi.value)||0;
+let f = parseFloat(finals.value)||0;
+
+let sem =
+p*0.20 +
+m*0.20 +
+pf*0.20 +
+f*0.40;
+
+document.getElementById("semResult").innerText =
+"Semester: " + sem.toFixed(2) + "%";
+}
+
+</script>
+
+</body>
+</html>
