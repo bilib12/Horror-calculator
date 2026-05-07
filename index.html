@@ -49,7 +49,7 @@ body {
     to { opacity: 0; visibility: hidden; }
 }
 
-/* ================= HORROR MODE ================= */
+/* HORROR MODE */
 .horror-bg {
     background: radial-gradient(circle at top, #000, #050505);
 }
@@ -84,18 +84,6 @@ body {
 
 .slash {
     color: red;
-}
-
-.shake {
-    animation: shake 0.25s infinite;
-}
-
-@keyframes shake {
-    0% { transform: translate(0,0); }
-    25% { transform: translate(-1px,1px); }
-    50% { transform: translate(1px,-1px); }
-    75% { transform: translate(-1px,-1px); }
-    100% { transform: translate(1px,1px); }
 }
 </style>
 </head>
@@ -200,7 +188,7 @@ function startApp(){
         document.body.classList.add("horror-bg");
 
         document.querySelectorAll(".bg-white").forEach(el=>{
-            el.classList.add("horror-card","shake");
+            el.classList.add("horror-card");
         });
 
         document.querySelectorAll("h1,h2,label").forEach(el=>{
@@ -238,7 +226,7 @@ function avg(prefix){
             arr.push((s/m)*100);
         }
     }
-    return arr.length?arr.reduce((a,b)=>a+b)/arr.length:0;
+    return arr.length ? arr.reduce((a,b)=>a+b)/arr.length : 0;
 }
 
 // CLASS GRADE
